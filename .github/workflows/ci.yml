@@ -19,29 +19,42 @@ jobs:
       uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '16'
-    - name: Install dependencies
+    - name: Install base dependencies
       run: |
-        brew install cmake libplist libusbmuxd libimobiledevice libirecovery openssl zlib curl libzip autoconf automake libtool pkg-config
+        brew install cmake autoconf automake libtool pkg-config openssl zlib curl libzip libplist libusbmuxd libimobiledevice libirecovery
     - name: Build libgeneral
       run: |
         git clone https://github.com/tihmstar/libgeneral
-        cd libgeneral
-        autoreconf -fi
-        ./configure
-        make -j$(sysctl -n hw.logicalcpu)
-        sudo make install
+        cd libgeneral && autoreconf -fi && ./configure
+        make -j$(sysctl -n hw.logicalcpu) && sudo make install
     - name: Build libfragmentzip
       run: |
         git clone https://github.com/tihmstar/libfragmentzip
-        cd libfragmentzip
-        autoreconf -fi
-        ./configure
-        make -j$(sysctl -n hw.logicalcpu)
-        sudo make install
-    - name: Build
+        cd libfragmentzip && autoreconf -fi && ./configure
+        make -j$(sysctl -n hw.logicalcpu) && sudo make install
+    - name: Build libinsn
       run: |
-        mkdir -p build
-        cd build
+        git clone https://github.com/tihmstar/libinsn
+        cd libinsn && autoreconf -fi && ./configure
+        make -j$(sysctl -n hw.logicalcpu) && sudo make install
+    - name: Build img4tool
+      run: |
+        git clone https://github.com/tihmstar/img4tool
+        cd img4tool && autoreconf -fi && ./configure
+        make -j$(sysctl -n hw.logicalcpu) && sudo make install
+    - name: Build liboffsetfinder64
+      run: |
+        git clone https://github.com/Cryptiiiic/liboffsetfinder64
+        cd liboffsetfinder64 && autoreconf -fi && ./configure
+        make -j$(sysctl -n hw.logicalcpu) && sudo make install
+    - name: Build libipatcher
+      run: |
+        git clone https://github.com/Cryptiiiic/libipatcher
+        cd libipatcher && autoreconf -fi && ./configure
+        make -j$(sysctl -n hw.logicalcpu) && sudo make install
+    - name: Build futurerestore
+      run: |
+        mkdir -p build && cd build
         cmake .. \
           -DCMAKE_BUILD_TYPE=Release \
           -DOPENSSL_ROOT_DIR=$(brew --prefix openssl)
