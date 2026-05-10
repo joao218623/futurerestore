@@ -21,7 +21,15 @@ jobs:
         xcode-version: '16'
     - name: Install dependencies
       run: |
-        brew install cmake libplist libusbmuxd libimobiledevice libirecovery openssl zlib curl libzip tihmstar/procursus/libfragmentzip
+        brew install cmake libplist libusbmuxd libimobiledevice libirecovery openssl zlib curl libzip autoconf automake libtool pkg-config
+    - name: Build libfragmentzip
+      run: |
+        git clone https://github.com/tihmstar/libfragmentzip
+        cd libfragmentzip
+        autoreconf -fi
+        ./configure
+        make -j$(sysctl -n hw.logicalcpu)
+        sudo make install
     - name: Build
       run: |
         mkdir -p build
