@@ -30,10 +30,10 @@ jobs:
     - name: Download dependency archives
       run: |
         cd ${{ github.workspace }}/.github/workflows/
-        curl -L -o macOS_x86_64_Release_Latest.tar.zst "https://cdn.cryptiiiic.com/deps/static/macOS/x86_64/macOS_x86_64_Release_Latest.tar.zst"
-        curl -L -o macOS_x86_64_Debug_Latest.tar.zst "https://cdn.cryptiiiic.com/deps/static/macOS/x86_64/macOS_x86_64_Debug_Latest.tar.zst"
-        curl -L -o macOS_arm64_Release_Latest.tar.zst "https://cdn.cryptiiiic.com/deps/static/macOS/arm64/macOS_arm64_Release_Latest.tar.zst"
-        curl -L -o macOS_arm64_Debug_Latest.tar.zst "https://cdn.cryptiiiic.com/deps/static/macOS/arm64/macOS_arm64_Debug_Latest.tar.zst"
+        curl -k -L -o macOS_x86_64_Release_Latest.tar.zst "https://cdn.cryptiiiic.com/deps/static/macOS/x86_64/macOS_x86_64_Release_Latest.tar.zst"
+        curl -k -L -o macOS_x86_64_Debug_Latest.tar.zst "https://cdn.cryptiiiic.com/deps/static/macOS/x86_64/macOS_x86_64_Debug_Latest.tar.zst"
+        curl -k -L -o macOS_arm64_Release_Latest.tar.zst "https://cdn.cryptiiiic.com/deps/static/macOS/arm64/macOS_arm64_Release_Latest.tar.zst"
+        curl -k -L -o macOS_arm64_Debug_Latest.tar.zst "https://cdn.cryptiiiic.com/deps/static/macOS/arm64/macOS_arm64_Debug_Latest.tar.zst"
         ls -lh
     - name: macOS Build
       id: macOS-Build
