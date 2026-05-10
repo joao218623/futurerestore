@@ -8,65 +8,37 @@ on:
 
 jobs:
   macOS:
-    env:
-      PROCURSUS: /opt/procursus
-      PATH: /opt/procursus/bin:/opt/procursus/libexec/gnubin:/usr/local/lib/ruby/gems/2.7.0/bin:/usr/local/opt/ruby@2.7/bin:/usr/local/opt/pipx_bin:/Users/runner/.cargo/bin:/usr/local/opt/curl/bin:/usr/local/bin:/usr/local/sbin:/Users/runner/bin:/Users/runner/.yarn/bin:/Users/runner/Library/Android/sdk/tools:/Users/runner/Library/Android/sdk/platform-tools:/Users/runner/Library/Android/sdk/ndk-bundle:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/bin:/bin:/usr/sbin:/sbin:/Users/runner/.dotnet/tools:/Users/runner/.ghcup/bin:/Users/runner/hostedtoolcache/stack/2.7.3/x64
     runs-on: macos-15-intel
     steps:
     - name: Checkout
-      id: Checkout
       uses: actions/checkout@v4
       with:
         submodules: 'true'
         fetch-depth: 0
     - name: Update Xcode
-      id: Update-Xcode
       uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '16'
-    - name: Install cmake and dependencies
+    - name: Install dependencies
       run: |
-        brew install cmake zstd gnu-tar
-    - name: Download dependency archives
+        brew install cmake libplist libusbmuxd libimobiledevice libirecovery openssl zlib curl libzip
+    - name: Build
       run: |
-        cd ${{ github.workspace }}/.github/workflows/
-        curl -k -L -o macOS_x86_64_Release_Latest.tar.zst "https://cdn.cryptiiiic.com/deps/static/macOS/x86_64/macOS_x86_64_Release_Latest.tar.zst"
-        curl -k -L -o macOS_x86_64_Debug_Latest.tar.zst "https://cdn.cryptiiiic.com/deps/static/macOS/x86_64/macOS_x86_64_Debug_Latest.tar.zst"
-        curl -k -L -o macOS_arm64_Release_Latest.tar.zst "https://cdn.cryptiiiic.com/deps/static/macOS/arm64/macOS_arm64_Release_Latest.tar.zst"
-        curl -k -L -o macOS_arm64_Debug_Latest.tar.zst "https://cdn.cryptiiiic.com/deps/static/macOS/arm64/macOS_arm64_Debug_Latest.tar.zst"
-        ls -lh
-    - name: macOS Build
-      id: macOS-Build
+        mkdir -p build
+        cd build
+        cmake .. \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DOPENSSL_ROOT_DIR=$(brew --prefix openssl)
+        make -j$(sysctl -n hw.logicalcpu)
+    - name: Package
       run: |
-        ${{ github.workspace }}/.github/workflows/mac-bootstrap.sh
-        ${{ github.workspace }}/.github/workflows/mac-build.sh
-        ${{ github.workspace }}/.github/workflows/mac-post.sh
-    - name: Versioning
-      id: Versioning
-      uses: actions/upload-artifact@v4
-      with:
-        name: Versioning
-        path: |
-          ${{ github.workspace }}/latest_build_sha.txt
-          ${{ github.workspace }}/latest_build_num.txt
+        mkdir -p output
+        cp build/src/futurerestore output/futurerestore
+        cd output
+        tar -cJf ../futurerestore-macOS-RELEASE.tar.xz futurerestore
     - name: macOS RELEASE Archive
-      id: macOS-RELEASE-Archive
       uses: actions/upload-artifact@v4
       with:
         name: futurerestore-macOS-RELEASE
-        path: |
-          ${{ github.workspace }}/futurerestore-macOS-*-RELEASE.tar.xz
-    - name: macOS DEBUG Archive
-      id: macOS-DEBUG-Archive
-      uses: actions/upload-artifact@v4
-      with:
-        name: futurerestore-macOS-DEBUG
-        path: |
-          ${{ github.workspace }}/futurerestore-macOS-*-DEBUG.tar.xz
-    - name: macOS ASAN Archive
-      id: macOS-ASAN-Archive
-      uses: actions/upload-artifact@v4
-      with:
-        name: futurerestore-macOS-ASAN
-        path: |
-          ${{ github.workspace }}/futurerestore-macOS-*-ASAN.tar.xz
+        path: futurerestore-macOS-RELEASE.tar.xz
+        retention-days: 7
