@@ -21,7 +21,7 @@ jobs:
         xcode-version: '16'
     - name: Install dependencies
       run: |
-        brew install cmake libplist libusbmuxd libimobiledevice libirecovery openssl zlib curl libzip
+        brew install cmake libplist libusbmuxd libimobiledevice libirecovery openssl zlib curl libzip tihmstar/procursus/libfragmentzip
     - name: Build
       run: |
         mkdir -p build
