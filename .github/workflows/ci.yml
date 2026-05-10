@@ -47,21 +47,33 @@ jobs:
         git clone https://github.com/Cryptiiiic/liboffsetfinder64
         cd liboffsetfinder64
         mkdir -p build && cd build
-        cmake .. -DCMAKE_BUILD_TYPE=Release
+        cmake .. \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INCLUDE_PATH=/usr/local/include \
+          -DCMAKE_LIBRARY_PATH=/usr/local/lib \
+          -DCMAKE_C_FLAGS="-I/usr/local/include" \
+          -DCMAKE_CXX_FLAGS="-I/usr/local/include"
         make -j$(sysctl -n hw.logicalcpu) && sudo make install
     - name: Build libipatcher
       run: |
         git clone https://github.com/Cryptiiiic/libipatcher
         cd libipatcher
         mkdir -p build && cd build
-        cmake .. -DCMAKE_BUILD_TYPE=Release
+        cmake .. \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INCLUDE_PATH=/usr/local/include \
+          -DCMAKE_LIBRARY_PATH=/usr/local/lib \
+          -DCMAKE_C_FLAGS="-I/usr/local/include" \
+          -DCMAKE_CXX_FLAGS="-I/usr/local/include"
         make -j$(sysctl -n hw.logicalcpu) && sudo make install
     - name: Build futurerestore
       run: |
         mkdir -p build && cd build
         cmake .. \
           -DCMAKE_BUILD_TYPE=Release \
-          -DOPENSSL_ROOT_DIR=$(brew --prefix openssl)
+          -DOPENSSL_ROOT_DIR=$(brew --prefix openssl) \
+          -DCMAKE_C_FLAGS="-I/usr/local/include" \
+          -DCMAKE_CXX_FLAGS="-I/usr/local/include"
         make -j$(sysctl -n hw.logicalcpu)
     - name: Package
       run: |
